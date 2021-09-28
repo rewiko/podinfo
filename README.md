@@ -38,8 +38,12 @@ Web API:
 * `POST /readyz/enable` signals the Kubernetes LB that this instance is ready to receive traffic
 * `POST /readyz/disable` signals the Kubernetes LB to stop sending requests to this instance
 * `GET /status/{code}` returns the status code
+* `GET /status/ingress/{code}` returns the status code
+* `GET /status/service/{code}` returns the status code
 * `GET /panic` crashes the process with exit code 255
-* `POST /echo` forwards the call to the backend service and echos the posted content 
+* `GET/POST /echo` forwards the call to the backend service and echos the posted content 
+* `GET/POST /forward/ingress` forwards the call to the backend ignress and echos the posted content, parameter `--backend-ingress`
+* `GET/POST /forward/service` forwards the call to the backend service and echos the posted content, parameter `--backend-service` 
 * `GET /env` returns the environment variables as a JSON array
 * `GET /headers` returns a JSON with the request HTTP headers
 * `GET /delay/{seconds}` waits for the specified period

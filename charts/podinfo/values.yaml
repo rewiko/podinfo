@@ -4,6 +4,8 @@ replicaCount: 1
 logLevel: info
 host: #0.0.0.0
 backend: #http://backend-podinfo:9898/echo
+backendIngress: #http://backend-podinfo:9898/echo
+backendService: #http://backend-podinfo:9898/echo
 backends: []
 
 image:
@@ -32,7 +34,7 @@ service:
   type: ClusterIP
   metricsPort: 9797
   httpPort: 9898
-  externalPort: 9898
+  externalPort: 80
   grpcPort: 9999
   grpcService: podinfo
   nodePort: 31198
