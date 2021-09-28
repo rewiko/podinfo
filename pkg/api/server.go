@@ -56,6 +56,8 @@ type Config struct {
 	HttpServerShutdownTimeout       time.Duration `mapstructure:"http-server-shutdown-timeout"`
 	HttpServerShutdownGracePeriod   time.Duration `mapstructure:"http-server-grace-period"`
 	BackendURL                      []string      `mapstructure:"backend-url"`
+	BackendService                  []string      `mapstructure:"backend-service"`
+	BackendIngress                  []string      `mapstructure:"backend-ingress"`
 	UILogo                          string        `mapstructure:"ui-logo"`
 	UIMessage                       string        `mapstructure:"ui-message"`
 	UIColor                         string        `mapstructure:"ui-color"`
@@ -122,6 +124,8 @@ func (s *Server) registerHandlers() {
 	s.router.HandleFunc("/", s.infoHandler).Methods("GET")
 	s.router.HandleFunc("/version", s.versionHandler).Methods("GET")
 	s.router.HandleFunc("/echo", s.echoHandler).Methods("GET", "POST")
+	s.router.HandleFunc("/forward/service", s.serviceHandler).Methods("GET", "POST")
+	s.router.HandleFunc("/forward/ingress", s.ingressHandler).Methods("GET", "POST")
 	s.router.HandleFunc("/env", s.envHandler).Methods("GET", "POST")
 	s.router.HandleFunc("/headers", s.echoHeadersHandler).Methods("GET", "POST")
 	s.router.HandleFunc("/delay/{wait:[0-9]+}", s.delayHandler).Methods("GET").Name("delay")
@@ -131,6 +135,8 @@ func (s *Server) registerHandlers() {
 	s.router.HandleFunc("/readyz/disable", s.disableReadyHandler).Methods("POST")
 	s.router.HandleFunc("/panic", s.panicHandler).Methods("GET")
 	s.router.HandleFunc("/status/{code:[0-9]+}", s.statusHandler).Methods("GET", "POST", "PUT").Name("status")
+	s.router.HandleFunc("/status/ingress/{code:[0-9]+}", s.statusHandler).Methods("GET", "POST", "PUT").Name("status")
+	s.router.HandleFunc("/status/service/{code:[0-9]+}", s.statusHandler).Methods("GET", "POST", "PUT").Name("status")
 	s.router.HandleFunc("/store", s.storeWriteHandler).Methods("POST", "PUT")
 	s.router.HandleFunc("/store/{hash}", s.storeReadHandler).Methods("GET").Name("store")
 	s.router.HandleFunc("/cache/{key}", s.cacheWriteHandler).Methods("POST", "PUT")
