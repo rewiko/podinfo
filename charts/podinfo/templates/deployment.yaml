@@ -104,6 +104,14 @@ spec:
           - name: PODINFO_BACKEND_URL
             value: {{ .Values.backend }}
           {{- end }}
+          {{- if .Values.backendService }}
+          - name: PODINFO_BACKEND_SERVICE
+            value: {{ .Values.backendService }}
+          {{- end }}
+          {{- if .Values.backendIngress }}
+          - name: PODINFO_BACKEND_INGRESS
+            value: {{ .Values.backendIngress }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.httpPort | default 9898 }}
