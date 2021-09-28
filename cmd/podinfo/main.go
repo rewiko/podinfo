@@ -31,6 +31,8 @@ func main() {
 	fs.String("grpc-service-name", "podinfo", "gPRC service name")
 	fs.String("level", "info", "log level debug, info, warn, error, flat or panic")
 	fs.StringSlice("backend-url", []string{}, "backend service URL")
+	fs.StringSlice("backend-ingress", []string{}, "backend ingress URL")
+	fs.StringSlice("backend-service", []string{}, "backend service URL")
 	fs.Duration("http-client-timeout", 10*time.Second, "client timeout duration")
 	fs.Duration("http-client-keepalive", 3*time.Second, "client keepalive duration")
 	fs.Duration("http-client-tls-handshake-timeout", 3*time.Second, "client handshake timeout duration")
@@ -79,6 +81,8 @@ func main() {
 	// bind flags and environment variables
 	viper.BindPFlags(fs)
 	viper.RegisterAlias("backendUrl", "backend-url")
+	viper.RegisterAlias("backendService", "backend-service")
+	viper.RegisterAlias("backendIngress", "backend-ingress")
 	hostname, _ := os.Hostname()
 	viper.SetDefault("jwt-secret", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
 	viper.SetDefault("ui-logo", "https://raw.githubusercontent.com/stefanprodan/podinfo/gh-pages/cuddle_clap.gif")

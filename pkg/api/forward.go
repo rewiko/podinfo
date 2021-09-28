@@ -19,9 +19,34 @@ import (
 // @Tags HTTP API
 // @Accept json
 // @Produce json
-// @Router /api/echo [post]
+// @Router /api/echo [get, post]
 // @Success 202 {object} api.MapResponse
 func (s *Server) echoHandler(w http.ResponseWriter, r *http.Request) {
+	s.forwardHandler(w, r, s.config.BackendURL)
+}
+
+// @Summary Service
+// @Description forwards the call to the backend service and echos the posted content
+// @Tags HTTP API
+// @Accept json
+// @Produce json
+// @Router /forward/service [get, post]
+// @Success 202 {object} api.MapResponse
+func (s *Server) serviceHandler(w http.ResponseWriter, r *http.Request) {
+	s.forwardHandler(w, r, s.config.BackendService)
+}
+
+// @Description forwards the call to the backend ingress and echos the posted content
+// @Tags HTTP API
+// @Accept json
+// @Produce json
+// @Router /forward/ingress [get, post]
+// @Success 202 {object} api.MapResponse
+func (s *Server) ingressHandler(w http.ResponseWriter, r *http.Request) {
+	s.forwardHandler(w, r, s.config.BackendIngress)
+}
+
+func (s *Server) forwardHandler(w http.ResponseWriter, r *http.Request, backendUrl []string) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		s.logger.Error("reading the request body failed", zap.Error(err))
@@ -29,12 +54,12 @@ func (s *Server) echoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	if len(s.config.BackendURL) > 0 {
-		result := make([]string, len(s.config.BackendURL))
-		statusCode := make([]int, len(s.config.BackendURL))
+	if len(backendUrl) > 0 {
+		result := make([]string, len(backendUrl))
+		statusCode := make([]int, len(backendUrl))
 		var wg sync.WaitGroup
-		wg.Add(len(s.config.BackendURL))
-		for i, b := range s.config.BackendURL {
+		wg.Add(len(backendUrl))
+		for i, b := range backendUrl {
 			go func(index int, backend string) {
 				defer wg.Done()
 				// provide a host overwrite "https://hostname.com|hostheader.com"
@@ -63,6 +88,7 @@ func (s *Server) echoHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					s.logger.Error("backend call failed", zap.Error(err), zap.String("url", backend))
 					result[index] = fmt.Sprintf("backend %v call failed %v", backend, err)
+					// report connection reset or other issues to the client
 					statusCode[index] = 418
 					return
 				}
